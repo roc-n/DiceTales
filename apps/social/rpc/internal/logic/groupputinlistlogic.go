@@ -1,0 +1,41 @@
+package logic
+
+import (
+	"context"
+
+	"dicetales.com/apps/social/rpc/internal/svc"
+	"dicetales.com/apps/social/rpc/social"
+	"dicetales.com/pkg/errorx"
+
+	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type GroupPutinListLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewGroupPutinListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GroupPutinListLogic {
+	return &GroupPutinListLogic{
+		ctx:    ctx,
+		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
+	}
+}
+
+func (l *GroupPutinListLogic) GroupPutinList(in *social.GroupPutinListReq) (*social.GroupPutinListResp, error) {
+	groupReqs, err := l.svcCtx.GroupRequestModel.ListNoHandle(l.ctx, in.GroupId)
+	if err != nil {
+		return nil, errors.Wrapf(errorx.NewDBErr(), "list group req err [%v] req [%v]", err, in.GroupId)
+	}
+
+	var respList []*social.GroupRequest
+	copier.Copy(&respList, groupReqs)
+
+	return &social.GroupPutinListResp{
+		List: respList,
+	}, nil
+}

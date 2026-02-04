@@ -1,0 +1,101 @@
+services:
+  etcd:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/bitnami/etcd:3.6.1
+    container_name: etcd
+    ports:
+      - "3379:2379"
+      - "3380:2380"
+    environment:
+      - ETCD_ENABLE_V2=true
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://124.221.43.166:3379
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_NAME=etcd
+    volumes:
+      - ./components/etcd/data:/bitnami/etcd/data
+      - ./components/etcd/logs:/bitnami/etcd/logs
+    networks:
+      dicetale:
+
+  redis:
+    image: redis:alpine3.18
+    ports:
+      - 16379:6379
+    container_name: redis
+    volumes:
+      - ./components/redis/data:/data
+      - ./components/redis/config/redis.conf:/usr/local/redis/config/redis.conf
+    environment:
+      TZ: Asia/Shanghai
+    restart: always
+    networks:
+      dicetale:
+    command: redis-server --requirepass go-chat --appendonly yes
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 13306:3306
+    container_name: mysql
+    volumes:
+      - ./components/mysql/data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
+    environment:
+      MYSQL_ROOT_PASSWORD: go-chat
+    restart: always
+    networks:
+      dicetale:
+
+  mongo:
+    image: mongo:8.2.3
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: go-chat
+    ports:
+      - 47017:27017
+    volumes:
+      - ./components/mongo/data:/data/db
+      - /etc/localtime:/etc/localtime
+    restart: always
+    networks:
+      dicetale:
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode (no Zookeeper)
+      TZ: Asia/Shanghai
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://124.221.43.166:9092
+      # 必须与 container_name 保持一致，否则无法通信
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    volumes:
+      - ./components/kafka:/bitnami/kafka
+    networks:
+      dicetale:
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    container_name: jaeger
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP collector
+      - "6831:6831/udp" # Agent (UDP)
+    environment:
+      - SPAN_STORAGE_TYPE=memory
+    restart: unless-stopped
+    networks:
+      dicetale:
+
+networks:
+  dicetale:
+    external: true
+    name: dicetale

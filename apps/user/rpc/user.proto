@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./user";
+
+// model
+message UserEntity {
+  string  id = 1;                // 用户id
+  string  avatar = 2;            // 用户头像
+  string  nickname = 3;          // 昵称
+  string  bio = 4;               // 个性签名
+  string  phone  = 5;            // 手机号码
+  string  city = 6;              // 所在地
+  int32   status  = 7;           // 锁定状态
+  int32   sex = 8;               // 性别
+}
+
+// req 与 resp
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  string pong = 1;
+}
+
+message LoginReq {
+  string  id = 1;
+  string  password = 2;
+}
+
+message LoginResp {
+  string Token = 1;
+  int64 expire = 2;
+}
+
+message RegisterReq{
+  string  phone = 1;
+  string  nickname = 2;
+  string  password = 3;
+  string  avatar = 4;
+  int32   sex = 5;
+  string  city = 6;
+  string  bio = 7;
+}
+
+message RegisterResp {
+  string Token = 1;
+  int64 expire = 2;
+  string Id = 3;
+}
+
+message GetUserInfoReq {
+  string id = 1;
+}
+
+message GetUserInfoResp {
+  UserEntity user = 1;
+}
+
+message FindUserReq {
+  string id = 1;
+  string phone = 2;
+  string name = 3;
+}
+
+message FindUserResp {
+  repeated UserEntity user = 1;
+}
+
+service User {
+  rpc Ping(Request) returns (Response);
+
+  rpc Login(LoginReq) returns (LoginResp);
+
+  rpc Register(RegisterReq) returns (RegisterResp);
+
+  rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoResp);
+
+  rpc FindUser(FindUserReq) returns (FindUserResp);
+}

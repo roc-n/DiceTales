@@ -1,0 +1,221 @@
+syntax = "proto3";
+
+package social;
+
+option go_package = "./social";
+
+// model
+message Friend {
+  int32  id = 1;
+  string uid = 2;
+  string remark = 3;
+  int32  addSource = 4;
+  string friendUid = 5;
+}
+
+message FriendRequest {
+  int32  id = 1;
+  string uid = 2;
+  string reqUid = 3;
+  string reqMsg = 4;
+  int64  reqTime = 5;
+  int32  handleResult = 6;
+}
+
+message Group {
+  string id = 1;
+  string name = 2;
+  string icon = 3;
+  int32  status = 4;
+  string creator_uid = 5;
+  int32  groupType = 6;
+  bool   isVerify = 7;
+  string notification = 8;
+  string notificationUid = 9;
+}
+
+message GroupMember {
+  int32  id = 1;
+  string groupId = 2;
+  string uid = 3;
+  int32  roleLevel = 6;
+  int64  joinTime = 7;
+  int32  joinSource = 8;
+  string inviterUid = 9;
+  string operatorUid = 10;
+}
+
+// req resp
+message GroupRequest {
+  int32  id = 1;
+  string groupId = 2;
+  string reqId = 3;
+  string reqMsg = 4;
+  int64  reqTime = 5;
+  int32  joinSource = 6;
+  string inviterUid = 7;
+  string handleUid = 8;
+  int32  handleResult = 9;
+}
+
+message FriendPutInReq {
+  string uid = 1;
+  string reqUid = 2;
+  string reqMsg = 3;
+  int64  reqTime = 4;
+  string remark = 5;
+}
+message FriendPutInResp {}
+
+message FriendPutInHandleReq {
+  int32 friendReqId = 1;
+  int32 handleResult = 2;
+  string remark = 3;
+  int32 addSource = 4;
+  string handleMessage = 5;
+  int64 handleTime = 6;
+}
+message FriendPutInHandleResp {}
+
+message FriendPutInListReq{
+  string uid = 1;
+}
+
+message FriendPutInListResp{
+  repeated FriendRequest reqList = 1;
+  repeated FriendRequest recvList = 2;
+}
+
+message FriendListReq{
+  string uid = 1;
+}
+
+message FriendListResp{
+  repeated Friend list = 1;
+}
+
+message FriendDeleteReq {
+  string uid = 1;
+  string friendUid = 2;
+}
+message FriendDeleteResp {}
+
+// 群
+message GroupCreateReq {
+  string name = 1;
+  string icon = 2;
+  bool isVerify = 3; 
+  string creatorUid = 4;
+  int32  groupType = 5;
+  string description = 6;
+}
+message GroupCreateResp {
+  string id = 1;
+}
+
+message GroupPutinReq {
+  string groupId = 1;
+  string reqUid = 2;
+  string reqMsg = 3;
+  int64  reqTime = 4;
+  int32  joinSource = 5;
+  string inviterUid = 6;
+}
+message GroupPutinResp {
+  string groupId = 1;
+}
+
+message GroupPutinListReq {
+  string groupId = 1;
+}
+message GroupPutinListResp {
+  repeated GroupRequest list = 1;
+}
+
+message GroupPutInHandleReq {
+  int32  groupReqId = 1;
+  string groupId = 2;
+  string handleUid = 3;
+  int32  handleResult = 4;
+}
+message GroupPutInHandleResp {
+  string groupId = 1;
+}
+
+message GroupListReq{
+  string uid = 1;
+}
+message GroupListResp{
+  repeated Group list = 1;
+}
+
+message GroupMemberReq {
+  string groupId = 1;
+}
+message GroupMemberResp {
+  repeated GroupMember List = 1;
+}
+
+message GroupUserReqListReq {
+  string uid = 1;
+}
+message GroupUserReqListResp {
+  repeated GroupRequest list = 1;
+}
+
+message GroupQuitReq {
+  string groupId = 1;
+  string uid = 2;
+}
+message GroupQuitResp {
+  string groupId = 1;
+}
+
+message GroupModifyReq {
+  string groupId = 1;
+  string name = 2;
+  string icon = 3;
+  bool isVerify = 4; 
+  string description = 5;
+}
+message GroupModifyResp {
+  string groupId = 1;
+}
+
+message GroupNotificationModifyReq {
+  string groupId = 1;
+  string notification = 2;
+  string notificationUid = 3;
+}
+
+message GroupNotificationModifyResp {
+  string groupId = 1;
+}
+
+
+
+// svc
+service social {
+
+  // 好友业务：请求好友、通过或拒绝申请、好友列表
+  rpc FriendPutIn(FriendPutInReq) returns(FriendPutInResp);
+  rpc FriendPutInHandle(FriendPutInHandleReq) returns(FriendPutInHandleResp);
+  rpc FriendPutInList(FriendPutInListReq) returns(FriendPutInListResp);
+  rpc FriendList(FriendListReq) returns (FriendListResp);
+  rpc FriendDelete(FriendDeleteReq) returns (FriendDeleteResp);
+
+  // 群业务：创建群，修改群，群公告，申请群，用户群列表，群成员，群退出..
+  rpc GroupCreate(GroupCreateReq) returns (GroupCreateResp);
+  rpc GroupPutin(GroupPutinReq) returns (GroupPutinResp);
+  rpc GroupPutinList(GroupPutinListReq) returns (GroupPutinListResp);
+  rpc GroupUserReqList(GroupUserReqListReq) returns (GroupUserReqListResp);
+  rpc GroupPutInHandle(GroupPutInHandleReq) returns(GroupPutInHandleResp);
+  rpc GroupList(GroupListReq) returns (GroupListResp);
+  rpc GroupMember(GroupMemberReq) returns (GroupMemberResp);
+
+  rpc GroupQuit(GroupQuitReq) returns (GroupQuitResp);
+  rpc GroupModify(GroupModifyReq) returns (GroupModifyResp);
+  rpc GroupNotificationModify(GroupNotificationModifyReq) returns (GroupNotificationModifyResp);
+
+  // ..
+}

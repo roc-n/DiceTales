@@ -1,0 +1,21 @@
+Name: social.rpc
+Mode: dev
+ListenOn: 0.0.0.0:10001
+
+Etcd:
+  Hosts:
+  - 124.221.43.166:3379
+  Key: social.rpc
+
+Mysql:
+  DataSource: root:go-chat@tcp(124.221.43.166:13306)/DiceTales?charset=utf8mb4&parseTime=true&loc=Local
+
+Cache:
+  - Host: 124.221.43.166:16379
+    Type: node
+    Pass: go-chat
+
+Redisx:
+    Host: 124.221.43.166:16379
+    Type: node
+    Pass: go-chat
