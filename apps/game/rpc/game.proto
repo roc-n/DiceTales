@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package game;
+
+option go_package = "./game";
+
+message CategoryInfo {
+    string category = 1;
+    string mode = 2;
+    string theme = 3;
+    string mechanic = 4;
+    string portability = 5;
+    string table_requirement = 6;
+    int32 suitable_age = 7;
+}
+
+message GameDetailReq {
+    int64 game_id = 1;
+}
+
+message GameDetailResp {
+    int64 id = 1;
+    string name = 2;
+    string name_en = 3;
+    string cover_img = 4;
+    double score = 5;
+    int32 score_count = 6;
+    int32 min_players = 7;
+    int32 max_players = 8;
+    int32 min_recommended_players = 9;
+    int32 max_recommended_players = 10;
+    int32 need_host = 11;
+    int32 rank_position = 12;
+    int32 year = 13;
+    string description = 14;
+    double difficulty = 15;
+    int32 duration_per_player = 16;
+    string setup_time = 17;
+    string language_dependency = 18;
+    CategoryInfo category_info = 19;
+}
+
+message ListGamesReq {
+    int32 page = 1;
+    int32 size = 2;
+    string keyword = 3;
+    string category = 4;
+}
+
+message GameItem {
+    int64 id = 1;
+    string name = 2;
+    string name_en = 3;
+    string cover_img = 4;
+    double score = 5;
+    int32 score_count = 6;
+    int32 min_players = 7;
+    int32 max_players = 8;
+    string category = 9;
+}
+
+message ListGamesResp {
+    int64 total = 1;
+    repeated GameItem list = 2;
+}
+
+message GameBasicInfoReq {
+    int64 game_id = 1;
+}
+
+message GameBasicInfoResp {
+    int64 id = 1;
+    string name = 2;
+    string cover_img = 3;
+    double score = 4;
+}
+
+service Game {
+    // 获取桌游详细信息
+    rpc GetGameDetail(GameDetailReq) returns(GameDetailResp);
+    // 分页查询桌游列表
+    rpc ListGames(ListGamesReq) returns(ListGamesResp);
+    // 获取桌游基础摘要
+    rpc GetGameBasicInfo(GameBasicInfoReq) returns(GameBasicInfoResp);
+}
