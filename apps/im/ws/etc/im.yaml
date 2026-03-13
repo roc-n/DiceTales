@@ -1,0 +1,17 @@
+Name: im.ws
+Mode: dev
+ListenOn: 0.0.0.0:10090
+
+JwtAuth:
+  AccessSecret: labmem@001
+
+Mongo:
+  Url: "mongodb://root:go-chat@124.221.43.166:47017"
+  Db: dicetales
+
+MessageTransfer:
+  Topic: messageTransfer
+  Addrs:
+    - 124.221.43.166:9092
+  
+SensitiveWordsPath: /apps/im/ws/etc/dev/sensitive_words.txt

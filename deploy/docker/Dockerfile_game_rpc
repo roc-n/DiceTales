@@ -25,3 +25,4 @@ RUN chmod +x /$SERVER_NAME/bin/$SERVER_NAME-$SERVER_TYPE
 WORKDIR /$SERVER_NAME
 
 ENTRYPOINT ["/game/bin/game-rpc"]
+CMD ["-f", "/game/conf/game.yaml"]

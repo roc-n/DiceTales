@@ -54,6 +54,7 @@ RUN chmod +x /$SERVER_NAME/bin/$SERVER_NAME-$SERVER_TYPE
 
 WORKDIR /$SERVER_NAME
 ENTRYPOINT ["/[模块名]/bin/[模块名]-rpc"]
+CMD ["-f", "/[模块名]/conf/[模块名].yaml"]
 ```
 
 ### Step 3: 编写专属 Make 模板
