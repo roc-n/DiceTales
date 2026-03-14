@@ -1,4 +1,4 @@
-package websocket
+package core
 
 import (
 	"sync"
@@ -41,7 +41,6 @@ func (m *AckManager) Process(conn *Connx) {
 			conn.s.Send(&Message{
 				FrameType: FrameAck,
 				Id:        message.Id,
-				AckSeq:    message.AckSeq + 1,
 			}, conn)
 
 			m.pendingMsg = m.pendingMsg[1:]

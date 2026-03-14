@@ -1,4 +1,4 @@
-package websocket
+package core
 
 import (
 	"context"
@@ -61,7 +61,7 @@ func NewServer(addr string, opts ...ServerOptions) *Server {
 
 		Logger: logx.WithContext(context.Background()),
 
-		TaskRunner: threading.NewTaskRunner(opt.groupMsgConurrency),
+		TaskRunner: threading.NewTaskRunner(opt.groupMsgConcurrency),
 	}
 }
 
@@ -120,7 +120,7 @@ func (s *Server) addConn(cx *Connx, req *http.Request) {
 		c.Close()
 	}
 
-	cx.uid = uid
+	cx.Uid = uid
 	s.connToUser[cx] = uid
 	s.userToConn[uid] = cx
 }

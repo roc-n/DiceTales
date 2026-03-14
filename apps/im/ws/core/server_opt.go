@@ -1,13 +1,19 @@
-package websocket
+package core
 
 import (
 	"bufio"
+	"math"
 	"os"
 	"strings"
 	"time"
 
 	"dicetales.com/pkg/sensitive"
 	"github.com/zeromicro/go-zero/core/limit"
+)
+
+const (
+	defaultMaxConnectionIdle   = time.Duration(math.MaxInt64)
+	defaultGroupMsgConcurrency = 100
 )
 
 type ServerOptions func(opt *serverOption)
@@ -23,7 +29,7 @@ type serverOption struct {
 	// 最长连接空闲时间，超过这个时间没有任何消息（任意消息，包括心跳包），则关闭连接
 	maxConnectionIdle time.Duration
 	// 群聊最大消息转发数
-	groupMsgConurrency int
+	groupMsgConcurrency int
 	// 敏感词过滤器，基于布隆过滤器实现
 	sensitiveFilter *sensitive.SensitiveFilter
 	// 消息限流器，针对每个用户的消息发送频率进行限制
@@ -32,11 +38,10 @@ type serverOption struct {
 
 func newServerOptions(opts ...ServerOptions) serverOption {
 	o := serverOption{
-		Authentication:     new(authentication),
-		maxConnectionIdle:  defaultMaxConnectionIdle,
-		ackTimeout:         defaultAckTimeout,
-		patten:             "/ws",
-		groupMsgConurrency: defaultGroupMsgConurrency,
+		Authentication:      new(authentication),
+		maxConnectionIdle:   defaultMaxConnectionIdle,
+		patten:              "/ws",
+		groupMsgConcurrency: defaultGroupMsgConcurrency,
 	}
 
 	for _, opt := range opts {

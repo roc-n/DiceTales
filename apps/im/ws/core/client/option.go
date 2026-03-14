@@ -1,4 +1,4 @@
-package websocket
+package client
 
 import "net/http"
 

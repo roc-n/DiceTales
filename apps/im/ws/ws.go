@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
+	"dicetales.com/apps/im/ws/core"
 	"dicetales.com/apps/im/ws/internal/config"
 	"dicetales.com/apps/im/ws/internal/handler"
 	"dicetales.com/apps/im/ws/internal/svc"
-	"dicetales.com/apps/im/ws/websocket"
 	"github.com/zeromicro/go-zero/core/conf"
 )
 
@@ -24,12 +24,12 @@ func main() {
 	}
 
 	svc := svc.NewServiceContext(c)
-	srv := websocket.NewServer(c.ListenOn,
-		websocket.WithServerAuthentication(handler.NewJwtAuth(svc)),
-		websocket.WithServerAck(websocket.NoAck),
+	srv := core.NewServer(c.ListenOn,
+		core.WithServerAuthentication(handler.NewJwtAuth(svc)),
+		core.WithServerAck(core.NoAck),
 		// websocket.WithServerMaxConnectionIdle(10*time.Second),
 		// websocket.WithServerSensitive(),
-		websocket.WithServerMsgLimiter(),
+		core.WithServerMsgLimiter(),
 	)
 	defer srv.Stop()
 

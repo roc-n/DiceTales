@@ -1,4 +1,4 @@
-package websocket
+package core
 
 import (
 	"net/http"
@@ -15,7 +15,7 @@ type Connx struct {
 	// 为调用Server相关属性和方法，直接持有Server实例指针
 	s *Server
 
-	uid string
+	Uid string
 
 	// 心跳检测相关
 	idleTime    time.Time     // 开始空闲时刻

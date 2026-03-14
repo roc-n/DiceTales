@@ -1,4 +1,4 @@
-package websocket
+package core
 
 type Route struct {
 	Method  string

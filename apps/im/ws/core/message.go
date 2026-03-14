@@ -1,4 +1,4 @@
-package websocket
+package core
 
 type FrameType uint8
 
@@ -18,7 +18,7 @@ type Message struct {
 	Data   any    `json:"data"` // map[string]any
 }
 
-func NewMessage(formId string, data any) *Message {
+func NewMessage(data any) *Message {
 	return &Message{
 		FrameType: FrameData,
 		Data:      data,

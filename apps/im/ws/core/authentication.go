@@ -1,4 +1,4 @@
-package websocket
+package core
 
 import (
 	"fmt"

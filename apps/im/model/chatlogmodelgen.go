@@ -5,19 +5,17 @@ package model
 
 import (
 	"context"
-	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/mon"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type chatLogModel interface {
 	Insert(ctx context.Context, data *ChatLog) error
-	FindOne(ctx context.Context, id string) (*ChatLog, error)
+	FindOne(ctx context.Context, id int64) (*ChatLog, error)
 	Update(ctx context.Context, data *ChatLog) (*mongo.UpdateResult, error)
-	Delete(ctx context.Context, id string) (int64, error)
+	Delete(ctx context.Context, id int64) (int64, error)
 }
 
 type defaultChatLogModel struct {
@@ -29,25 +27,15 @@ func newDefaultChatLogModel(conn *mon.Model) *defaultChatLogModel {
 }
 
 func (m *defaultChatLogModel) Insert(ctx context.Context, data *ChatLog) error {
-	if data.ID.IsZero() {
-		data.ID = primitive.NewObjectID()
-		data.CreateAt = time.Now()
-		data.UpdateAt = time.Now()
-	}
 
 	_, err := m.conn.InsertOne(ctx, data)
 	return err
 }
 
-func (m *defaultChatLogModel) FindOne(ctx context.Context, id string) (*ChatLog, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, ErrInvalidObjectId
-	}
-
+func (m *defaultChatLogModel) FindOne(ctx context.Context, id int64) (*ChatLog, error) {
 	var data ChatLog
 
-	err = m.conn.FindOne(ctx, &data, bson.M{"_id": oid})
+	err := m.conn.FindOne(ctx, &data, bson.M{"_id": id})
 	switch err {
 	case nil:
 		return &data, nil
@@ -59,18 +47,13 @@ func (m *defaultChatLogModel) FindOne(ctx context.Context, id string) (*ChatLog,
 }
 
 func (m *defaultChatLogModel) Update(ctx context.Context, data *ChatLog) (*mongo.UpdateResult, error) {
-	data.UpdateAt = time.Now()
 
-	res, err := m.conn.UpdateOne(ctx, bson.M{"_id": data.ID}, bson.M{"$set": data})
+	res, err := m.conn.UpdateOne(ctx, bson.M{"_id": data.ID}, bson.M{"": data})
 	return res, err
 }
 
-func (m *defaultChatLogModel) Delete(ctx context.Context, id string) (int64, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return 0, ErrInvalidObjectId
-	}
+func (m *defaultChatLogModel) Delete(ctx context.Context, id int64) (int64, error) {
 
-	res, err := m.conn.DeleteOne(ctx, bson.M{"_id": oid})
+	res, err := m.conn.DeleteOne(ctx, bson.M{"_id": id})
 	return res, err
 }

@@ -1,14 +1,20 @@
 package model
 
 import (
-	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"dicetales.com/apps/im/ws/core"
 )
 
 type ChatLog struct {
-	ID primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ID int64 `bson:"_id,omitempty" json:"id,omitempty"`
+
 	// TODO: Fill your own fields
-	UpdateAt time.Time `bson:"updateAt,omitempty" json:"updateAt,omitempty"`
-	CreateAt time.Time `bson:"createAt,omitempty" json:"createAt,omitempty"`
+	ConversationId string `bson:"conversationId"`
+	SendId         string `bson:"sendId"`
+	RecvId         string `bson:"recvId"`
+
+	ChatType   core.ChatType `bson:"chatType"`
+	MsgType    core.MType    `bson:"msgType"`
+	MsgContent string        `bson:"msgContent"`
+	SendTime   int64         `bson:"sendTime"`
+	Status     int           `bson:"status"`
 }
