@@ -3,6 +3,10 @@ package config
 import "github.com/zeromicro/go-zero/core/service"
 
 type Config struct {
+	Snowflake struct {
+		Node int64 `json:",default=2"`
+	}
+
 	service.ServiceConf
 
 	ListenOn string

@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/bits-and-blooms/bloom/v3 v3.7.1
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-ego/gse v1.0.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.5.2
@@ -18,7 +19,7 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.4.0
 	golang.org/x/crypto v0.43.0
 	golang.org/x/net v0.46.1-0.20251013234738-63d1a5100f82
-	google.golang.org/grpc v1.77.0
+	google.golang.org/grpc v1.71.0
 	google.golang.org/protobuf v1.36.10
 )
 

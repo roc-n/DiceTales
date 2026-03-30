@@ -27,7 +27,7 @@ func main() {
 	srv := core.NewServer(c.ListenOn,
 		core.WithServerAuthentication(handler.NewJwtAuth(svc)),
 		core.WithServerAck(core.NoAck),
-		// websocket.WithServerMaxConnectionIdle(10*time.Second),
+		// core.WithServerMaxConnectionIdle(10*time.Second),
 		// websocket.WithServerSensitive(),
 		core.WithServerMsgLimiter(),
 	)

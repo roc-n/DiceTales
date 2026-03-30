@@ -16,11 +16,11 @@ const (
 type (
 	ContentWrapper struct {
 		MType   `mapstructure:"mType"`
-		ID      string `mapstructure:"id"`
 		Content string `mapstructure:"content"`
 	}
 
 	ChatMessage struct {
+		MsgId          string `mapstructure:"msgId"`
 		ConversationId string `mapstructure:"conversationId"`
 		SendId         string `mapstructure:"sendId"`
 		RecvId         string `mapstructure:"recvId"`

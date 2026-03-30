@@ -1,20 +1,19 @@
 package model
 
 import (
-	"dicetales.com/apps/im/ws/core"
+	"time"
 )
 
 type ChatLog struct {
-	ID int64 `bson:"_id,omitempty" json:"id,omitempty"`
-
-	// TODO: Fill your own fields
-	ConversationId string `bson:"conversationId"`
-	SendId         string `bson:"sendId"`
-	RecvId         string `bson:"recvId"`
-
-	ChatType   core.ChatType `bson:"chatType"`
-	MsgType    core.MType    `bson:"msgType"`
-	MsgContent string        `bson:"msgContent"`
-	SendTime   int64         `bson:"sendTime"`
-	Status     int           `bson:"status"`
+	ID             string    `bson:"_id"`            // MsgId
+	ConversationId string    `bson:"conversationId"` // 会话ID
+	SendId         string    `bson:"sendId"`         // 发送人
+	RecvId         string    `bson:"recvId"`         // 接收人
+	ChatType       int32     `bson:"chatType"`       // 1-单聊 2-群聊
+	MsgType        int32     `bson:"msgType"`        // 1-文本 2-图片 3-语音
+	MsgContent     string    `bson:"msgContent"`     // 消息正文
+	SendTime       int64     `bson:"sendTime"`       // 发送时间
+	Status         int       `bson:"status"`         // 状态
+	CreateAt       time.Time `bson:"createAt,omitempty"`
+	UpdateAt       time.Time `bson:"updateAt,omitempty"`
 }

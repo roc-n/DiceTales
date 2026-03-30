@@ -3,6 +3,7 @@ package core
 import (
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -23,6 +24,9 @@ type Connx struct {
 
 	// ACK机制
 	ackM *AckManager
+
+	// 布尔型活跃标记位，1表示活跃，0表示不活跃，专门用于时间轮策略
+	isAlive int32
 
 	// 通知handlerWrite
 	msgChan chan *Message
@@ -48,12 +52,20 @@ func NewConnx(s *Server, w http.ResponseWriter, r *http.Request) *Connx {
 			pendingMsg: make([]*Message, 0, 2),
 		},
 
+		isAlive: 1, // 初始默认活跃
+
 		msgChan: make(chan *Message, 1),
 		done:    make(chan struct{}),
 	}
 
-	// 心跳检测，过滤掉长时间不活动的连接
-	go conn.heartBeat()
+	// 根据配置的心跳策略选择不同的处理方式
+	if s.opt.heartbeatStrategy == HeartbeatStrategyTimingWheel && s.tw != nil {
+		s.tw.addConn(conn)
+	} else {
+		// 默认传统策略：每个连接开启单独的心跳检测协程
+		go conn.heartBeat()
+	}
+
 	return conn
 }
 
@@ -71,6 +83,11 @@ func (c *Connx) appendMessage(msg *Message) {
 func (c *Connx) ReadMessage() (messageType int, data []byte, err error) {
 	messageType, data, err = c.Conn.ReadMessage()
 
+	// 时间轮策略下，仅需极度轻量的原子更新
+	if c.s.opt.heartbeatStrategy == HeartbeatStrategyTimingWheel {
+		atomic.StoreInt32(&c.isAlive, 1)
+	}
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -80,6 +97,11 @@ func (c *Connx) ReadMessage() (messageType int, data []byte, err error) {
 }
 
 func (c *Connx) WriteMessage(messageType int, data []byte) error {
+	// 时间轮策略下，仅需极度轻量的原子更新
+	if c.s.opt.heartbeatStrategy == HeartbeatStrategyTimingWheel {
+		atomic.StoreInt32(&c.isAlive, 1)
+	}
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 

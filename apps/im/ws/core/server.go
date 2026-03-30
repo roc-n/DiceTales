@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"net/http"
 
@@ -33,6 +34,9 @@ type Server struct {
 	connToUser map[*Connx]string
 	userToConn map[string]*Connx
 
+	// 时间轮相关
+	tw *TimingWheel
+
 	// 群聊业务相关
 	*threading.TaskRunner
 
@@ -47,6 +51,16 @@ WebSocket服务初始化相关，包括配置加载、服务启动停止等
 func NewServer(addr string, opts ...ServerOptions) *Server {
 	opt := newServerOptions(opts...)
 
+	tw := (*TimingWheel)(nil)
+	if opt.heartbeatStrategy == HeartbeatStrategyTimingWheel {
+		// 暂定1秒一跳，槽位数为最大空闲时间的秒数（如果小于1，则设为60）
+		slotNum := int(opt.maxConnectionIdle.Seconds())
+		if slotNum <= 0 {
+			slotNum = 60
+		}
+		tw = NewTimingWheel(time.Second, slotNum)
+	}
+
 	return &Server{
 		routes:   make(map[string]HandlerFunc),
 		addr:     addr,
@@ -58,6 +72,7 @@ func NewServer(addr string, opts ...ServerOptions) *Server {
 
 		connToUser: make(map[*Connx]string),
 		userToConn: make(map[string]*Connx),
+		tw:         tw,
 
 		Logger: logx.WithContext(context.Background()),
 
@@ -72,11 +87,17 @@ func (s *Server) AddRoutes(rs []Route) {
 }
 
 func (s *Server) Start() {
+	if s.tw != nil {
+		s.tw.Start()
+	}
 	http.HandleFunc(s.patten, s.ServeWs)
 	s.Info(http.ListenAndServe(s.addr, nil))
 }
 
 func (s *Server) Stop() {
+	if s.tw != nil {
+		s.tw.Stop()
+	}
 	fmt.Println("停止服务")
 }
 

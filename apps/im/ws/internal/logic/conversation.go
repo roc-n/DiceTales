@@ -34,8 +34,8 @@ func (l *Conversation) SingleChat(data *core.ChatMessage, userId string) error {
 		ConversationId: data.ConversationId,
 		SendId:         userId,
 		RecvId:         data.RecvId,
-		ChatType:       data.ChatType,
-		MsgType:        data.Wrapper.MType,
+		ChatType:       int32(data.ChatType),
+		MsgType:        int32(data.Wrapper.MType),
 		MsgContent:     data.Wrapper.Content,
 		SendTime:       time.Now().UnixNano(),
 	}

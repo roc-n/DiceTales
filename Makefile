@@ -6,11 +6,14 @@ social-rpc-gen:
 game-rpc-gen:
 	@make -f apps/game/rpc/gen.mk game-rpc-gen
 
+
 # Development Makefile
 user-rpc-release-test:
 	@make -f deploy/make/user-rpc.mk release-test
 game-rpc-release-test:
 	@make -f deploy/make/game-rpc.mk release-test
+im-ws-release-test:
+	@make -f deploy/make/im-ws.mk release-test
 
 # local test
 user-rpc-local-test:
@@ -19,3 +22,5 @@ social-rpc-local-test:
 	@make -f deploy/make/social-rpc.mk local-test
 game-rpc-local-test:
 	@make -f deploy/make/game-rpc.mk local-test
+im-ws-local-test:
+	@make -f deploy/make/im-ws.mk local-test

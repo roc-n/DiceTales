@@ -31,6 +31,7 @@ func Chat(svc *svc.ServiceContext) core.HandlerFunc {
 
 		// 转化为mq消息格式并推送
 		err := svc.TransferClient.Push(context.Background(), &core.ChatMessage{
+			MsgId:          svc.Snowflake.Generate().String(),
 			ConversationId: data.ConversationId,
 			ChatType:       data.ChatType,
 			SendId:         cx.Uid,

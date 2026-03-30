@@ -18,6 +18,13 @@ const (
 
 type ServerOptions func(opt *serverOption)
 
+type HeartbeatStrategy int
+
+const (
+	HeartbeatStrategyGoroutine HeartbeatStrategy = iota
+	HeartbeatStrategyTimingWheel
+)
+
 type serverOption struct {
 	Authentication
 
@@ -28,6 +35,8 @@ type serverOption struct {
 	ackTimeout time.Duration
 	// 最长连接空闲时间，超过这个时间没有任何消息（任意消息，包括心跳包），则关闭连接
 	maxConnectionIdle time.Duration
+	// 心跳检测策略
+	heartbeatStrategy HeartbeatStrategy
 	// 群聊最大消息转发数
 	groupMsgConcurrency int
 	// 敏感词过滤器，基于布隆过滤器实现
@@ -73,6 +82,12 @@ func WithServerMaxConnectionIdle(maxConnectionIdle time.Duration) ServerOptions 
 		if maxConnectionIdle > 0 {
 			opt.maxConnectionIdle = maxConnectionIdle
 		}
+	}
+}
+
+func WithHeartbeatStrategy(strategy HeartbeatStrategy) ServerOptions {
+	return func(opt *serverOption) {
+		opt.heartbeatStrategy = strategy
 	}
 }
 

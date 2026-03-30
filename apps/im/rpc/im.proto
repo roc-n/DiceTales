@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package im;
+option go_package = "./im";
+
+// 1. 设置/建立会话
+message SetUpUserConversationReq {
+    string sendId = 1;
+    string recvId = 2;
+    int32 chatType = 3;
+}
+message SetUpUserConversationResp {
+    string conversationId = 1;
+}
+
+// 2. 存储聊天记录 (聊天持久化)
+message PutChatLogReq {
+    string conversationId = 1;
+    string sendId = 2;
+    string recvId = 3;
+    int32 chatType = 4;
+    int32 msgType = 5;
+    string msgContent = 6;
+    string msgId = 7;
+}
+message PutChatLogResp {
+    string msgId = 1;
+    int64 seq = 2;
+    int64 sendTime = 3;
+}
+
+// 3. 获取最新会话列表
+message GetConversationsReq {
+    string ownerId = 1;
+}
+message Conversation {
+    string conversationId = 1;
+    int32 chatType = 2;
+    int64 maxSeq = 3;
+    string latestMsg = 4;
+    int64 lastMsgTime = 5;
+}
+message GetConversationsResp {
+    repeated Conversation conversationList = 1;
+}
+
+// 4. 获取聊天记录 (游标拉取)
+message GetChatLogReq {
+    string conversationId = 1;
+    int64 cursorTime = 2;
+    int32 limit = 3;
+}
+message ChatLog {
+    string msgId = 1;
+    string conversationId = 2;
+    
+    string sendId = 4;
+    string recvId = 5;
+    int32 msgType = 6;
+    string msgContent = 7;
+    int64 sendTime = 8;
+}
+message GetChatLogResp {
+    repeated ChatLog chatLogList = 1;
+}
+
+// 5. 消息已读ack (推游标)
+message AckMessageReadReq {
+    string ownerId = 1;
+    string conversationId = 2;
+    int64 readSeq = 3;
+}
+message AckMessageReadResp {
+    bool success = 1;
+}
+
+service Im {
+    rpc SetUpUserConversation(SetUpUserConversationReq) returns (SetUpUserConversationResp);
+    rpc PutChatLog(PutChatLogReq) returns (PutChatLogResp);
+    rpc GetConversations(GetConversationsReq) returns (GetConversationsResp);
+    rpc GetChatLog(GetChatLogReq) returns (GetChatLogResp);
+    rpc AckMessageRead(AckMessageReadReq) returns (AckMessageReadResp);
+}
