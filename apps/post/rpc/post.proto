@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package post;
+option go_package = "./post";
+
+message PostInfo {
+  int64 id = 1;
+  int64 user_id = 2;
+  string content = 3;
+  repeated string images = 4;
+  int32 visibility = 5;
+  int64 related_game_id = 6;
+  int32 like_count = 7;
+  int32 comment_count = 8;
+  int32 collect_count = 9;
+  int64 created_at = 10;
+}
+
+message CommentPreview {
+  int64 id = 1;
+  int64 user_id = 2;
+  string content = 3;
+  int32 like_count = 4;
+  int64 created_at = 5;
+}
+
+message PostDetail {
+  PostInfo post = 1;
+  repeated CommentPreview top_comments = 2;
+}
+
+message CreatePostReq {
+  int64 user_id = 1;
+  string content = 2;
+  repeated string images = 3;
+  int32 visibility = 4;
+  int64 related_game_id = 5;
+}
+
+message CreatePostResp {
+  int64 post_id = 1;
+}
+
+message GetFriendTimelineReq {
+  int64 user_id = 1;
+  int64 cursor = 2; // e.g., timestamp score from redis zset
+  int32 limit = 3;
+}
+
+message GetFriendTimelineResp {
+  repeated PostDetail list = 1;
+}
+
+message GetPublicTimelineReq {
+  int64 user_id = 1;
+  int64 cursor = 2; // e.g., max auto-increment id or timestamp
+  int32 limit = 3;
+}
+
+message GetPublicTimelineResp {
+  repeated PostDetail list = 1;
+}
+
+message InteractReq {
+  int64 user_id = 1;
+  int64 target_id = 2;
+  int32 target_type = 3; // 1: Post, 2: Comment
+  int32 action = 4; // 1: Like, 2: Unlike, 3: Collect, 4: Uncollect
+}
+
+message InteractResp {
+  bool success = 1;
+}
+
+message CreateCommentReq {
+  int64 user_id = 1;
+  int64 post_id = 2;
+  string content = 3;
+  int64 parent_id = 4;
+  int64 root_id = 5;
+}
+
+message CreateCommentResp {
+  int64 comment_id = 1;
+}
+
+message GetPostDetailReq {
+  int64 post_id = 1;
+}
+
+message GetPostDetailResp {
+  PostDetail detail = 1;
+}
+
+service PostService {
+  rpc CreatePost(CreatePostReq) returns (CreatePostResp);
+  rpc GetFriendTimeline(GetFriendTimelineReq) returns (GetFriendTimelineResp);
+  rpc GetPublicTimeline(GetPublicTimelineReq) returns (GetPublicTimelineResp);
+  rpc Interact(InteractReq) returns (InteractResp);
+  rpc CreateComment(CreateCommentReq) returns (CreateCommentResp);
+  rpc GetPostDetail(GetPostDetailReq) returns (GetPostDetailResp);
+}
