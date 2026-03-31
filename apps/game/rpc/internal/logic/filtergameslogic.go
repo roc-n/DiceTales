@@ -56,7 +56,7 @@ func (l *FilterGamesLogic) FilterGames(in *game.FilterGamesReq) (*game.FilterGam
 
 	// 2. 将所有筛选条件的 Bitmap 执行 BITOP AND 交集计算
 	// BITOP 命令: BITOP AND destkey srckey1 srckey2 ...
-	args := []interface{}{"AND", resultKey}
+	args := []any{"AND", resultKey}
 	for _, key := range bitKeys {
 		args = append(args, key)
 	}
@@ -123,7 +123,7 @@ func (l *FilterGamesLogic) FilterGames(in *game.FilterGamesReq) (*game.FilterGam
 }
 
 // 模拟解析，实战中可查 Redis 原生方法或者直接读 []byte 解析每一位
-func parseBitmapToIDs(rc interface{}, key string) []int64 {
+func parseBitmapToIDs(rc any, key string) []int64 {
 	// Dummy, 假设通过 Bitmap 返回了 1，2，3
 	return []int64{1, 2, 3}
 }
