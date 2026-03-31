@@ -90,9 +90,9 @@ func (t *MessageTransfer) addChatLog(ctx context.Context, data *ws.ChatMessage) 
 		ConversationId: data.ConversationId,
 		SendId:         data.SendId,
 		RecvId:         data.RecvId,
-		ChatType:       data.ChatType,
-		MsgType:        data.Wrapper.MType,
-		MsgContent:     data.Wrapper.Content,
+		ChatType:       int32(data.ChatType),
+		MsgType:        int32(data.Wrapper.MType),
+		MsgContent:     string(data.Wrapper.Content),
 		SendTime:       data.SendTime,
 	}
 	err := t.svc.ChatLogModel.Insert(ctx, &chatLog)
@@ -101,5 +101,5 @@ func (t *MessageTransfer) addChatLog(ctx context.Context, data *ws.ChatMessage) 
 		return err
 	}
 
-	return t.svc.ConversationModel.UpdateMsg(ctx, &chatLog)
+	return t.svc.ConversationModel.UpdateMsg(ctx, data.ConversationId, 0, string(data.Wrapper.Content), data.SendTime)
 }

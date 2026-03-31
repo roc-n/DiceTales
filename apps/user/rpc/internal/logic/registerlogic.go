@@ -2,12 +2,10 @@ package logic
 
 import (
 	"context"
-	"time"
 
 	"dicetales.com/apps/user/model"
 	"dicetales.com/apps/user/rpc/internal/svc"
 	"dicetales.com/apps/user/rpc/user"
-	"dicetales.com/pkg/auth"
 	"dicetales.com/pkg/encrypt"
 	"dicetales.com/pkg/errorx"
 
@@ -81,16 +79,18 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 		l.Logger.Errorf("confirm user id failed, id: %s, err: [%v]", id, err)
 	}
 
-	// 生成token
-	now := time.Now().Unix()
-	token, err := auth.GetJwtToken(l.svcCtx.Config.Jwt.AccessSecret, now, l.svcCtx.Config.Jwt.AccessExpire, userEntity.Id)
+	pack, err := issueDualTokens(l.ctx, l.svcCtx, id, l.Logger)
 	if err != nil {
-		return nil, errors.Wrapf(errorx.NewInternalErr(), "auth get jwt token err: [%v]", err)
+		return nil, err
 	}
 
 	return &user.RegisterResp{
-		Token:  token,
-		Expire: now + l.svcCtx.Config.Jwt.AccessExpire,
-		Id:     id,
+		Token:         pack.AccessToken,
+		Expire:        pack.AccessExpire,
+		Id:            id,
+		AccessToken:   pack.AccessToken,
+		AccessExpire:  pack.AccessExpire,
+		RefreshToken:  pack.RefreshToken,
+		RefreshExpire: pack.RefreshExpire,
 	}, nil
 }

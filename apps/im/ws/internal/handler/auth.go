@@ -41,6 +41,15 @@ func (j *JwtAuth) Auth(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
+	// 拦截非 access 类型的 token 被误用作 ws 鉴权
+	// 为了兼容老 token，如果存在 typ 则必须是 access
+	if typ, has := claims["typ"]; has {
+		if typStr, ok := typ.(string); !ok || typStr != "access" {
+			j.Logger.Errorf("token type is not access: %v", typ)
+			return false
+		}
+	}
+
 	// 注意这里不要用自定义类型
 	*r = *r.WithContext(context.WithValue(r.Context(), ctxdata.Identify, claims[ctxdata.Identify]))
 

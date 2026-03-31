@@ -2,12 +2,10 @@ package logic
 
 import (
 	"context"
-	"time"
 
 	"dicetales.com/apps/user/model"
 	"dicetales.com/apps/user/rpc/internal/svc"
 	"dicetales.com/apps/user/rpc/user"
-	"dicetales.com/pkg/auth"
 	"dicetales.com/pkg/encrypt"
 	"dicetales.com/pkg/errorx"
 
@@ -50,16 +48,17 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 		return nil, errors.WithStack(ErrUserPwdError)
 	}
 
-	// 生成token
-	now := time.Now().Unix()
-	token, err := auth.GetJwtToken(l.svcCtx.Config.Jwt.AccessSecret, now, l.svcCtx.Config.Jwt.AccessExpire, userInfo.Id)
+	pack, err := issueDualTokens(l.ctx, l.svcCtx, userInfo.Id, l.Logger)
 	if err != nil {
-		return nil, errors.Wrapf(errorx.NewInternalErr(), "ctxdata get jwt token err %v", err)
-
+		return nil, err
 	}
 
 	return &user.LoginResp{
-		Token:  token,
-		Expire: now + l.svcCtx.Config.Jwt.AccessExpire,
+		Token:         pack.AccessToken,  // backwards compat
+		Expire:        pack.AccessExpire, // backwards compat
+		AccessToken:   pack.AccessToken,
+		AccessExpire:  pack.AccessExpire,
+		RefreshToken:  pack.RefreshToken,
+		RefreshExpire: pack.RefreshExpire,
 	}, nil
 }

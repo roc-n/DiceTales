@@ -1,0 +1,18 @@
+syntax = "v1"
+
+type (
+    PostPlaceholderReq {}
+    PostPlaceholderResp {
+        Msg string `json:"msg"`
+    }
+)
+
+@server (
+    prefix: /v1/post
+    group: post
+)
+service api-api {
+    @doc "Post Module Placeholder"
+    @handler postPing
+    get /ping (PostPlaceholderReq) returns (PostPlaceholderResp)
+}

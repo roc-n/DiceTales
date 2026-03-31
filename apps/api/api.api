@@ -1,0 +1,16 @@
+syntax = "v1"
+
+info (
+	title:  "DiceTales 统一API网关/BFF入口"
+	desc:   "聚合各微服务(user/game/meetup/post/social)的接口，统一处理鉴权及跨服务数据拼装。"
+	author: "labmem"
+)
+
+import (
+	"desc/user.api"
+	"desc/game.api"
+	"desc/meetup.api"
+	"desc/post.api"
+	"desc/social.api"
+)
+

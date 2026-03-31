@@ -1,0 +1,18 @@
+syntax = "v1"
+
+type (
+    MeetupPlaceholderReq {}
+    MeetupPlaceholderResp {
+        Msg string `json:"msg"`
+    }
+)
+
+@server (
+    prefix: /v1/meetup
+    group: meetup
+)
+service api-api {
+    @doc "Meetup Module Placeholder"
+    @handler meetupPing
+    get /ping (MeetupPlaceholderReq) returns (MeetupPlaceholderResp)
+}

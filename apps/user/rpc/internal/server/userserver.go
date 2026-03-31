@@ -47,3 +47,8 @@ func (s *UserServer) FindUser(ctx context.Context, in *user.FindUserReq) (*user.
 	l := logic.NewFindUserLogic(ctx, s.svcCtx)
 	return l.FindUser(in)
 }
+
+func (s *UserServer) RefreshToken(ctx context.Context, in *user.RefreshTokenReq) (*user.RefreshTokenResp, error) {
+	l := logic.NewRefreshTokenLogic(ctx, s.svcCtx)
+	return l.RefreshToken(in)
+}

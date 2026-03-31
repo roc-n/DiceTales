@@ -30,8 +30,12 @@ message LoginReq {
 }
 
 message LoginResp {
-  string Token = 1;
-  int64 expire = 2;
+  string Token = 1; // deprecated
+  int64 expire = 2; // deprecated
+  string accessToken = 3;
+  int64 accessExpire = 4;
+  string refreshToken = 5;
+  int64 refreshExpire = 6;
 }
 
 message RegisterReq{
@@ -45,9 +49,13 @@ message RegisterReq{
 }
 
 message RegisterResp {
-  string Token = 1;
-  int64 expire = 2;
+  string Token = 1; // deprecated
+  int64 expire = 2; // deprecated
   string Id = 3;
+  string accessToken = 4;
+  int64 accessExpire = 5;
+  string refreshToken = 6;
+  int64 refreshExpire = 7;
 }
 
 message GetUserInfoReq {
@@ -68,14 +76,22 @@ message FindUserResp {
   repeated UserEntity user = 1;
 }
 
+message RefreshTokenReq {
+  string refreshToken = 1;
+}
+
+message RefreshTokenResp {
+  string accessToken = 1;
+  int64 accessExpire = 2;
+  string refreshToken = 3;
+  int64 refreshExpire = 4;
+}
+
 service User {
   rpc Ping(Request) returns (Response);
-
   rpc Login(LoginReq) returns (LoginResp);
-
   rpc Register(RegisterReq) returns (RegisterResp);
-
   rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoResp);
-
   rpc FindUser(FindUserReq) returns (FindUserResp);
+  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
 }

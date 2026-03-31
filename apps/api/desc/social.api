@@ -1,0 +1,18 @@
+syntax = "v1"
+
+type (
+    SocialPlaceholderReq {}
+    SocialPlaceholderResp {
+        Msg string `json:"msg"`
+    }
+)
+
+@server (
+    prefix: /v1/social
+    group: social
+)
+service api-api {
+    @doc "Social Module Placeholder"
+    @handler socialPing
+    get /ping (SocialPlaceholderReq) returns (SocialPlaceholderResp)
+}

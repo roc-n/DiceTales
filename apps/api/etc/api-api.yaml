@@ -1,0 +1,13 @@
+Name: api-api
+Host: 0.0.0.0
+Port: 8888
+
+JwtAuth:
+  AccessSecret: labmem@001
+  AccessExpire: 8640000
+
+UserRpc:
+  Etcd:
+    Hosts:
+    - 124.221.43.166:3379
+    Key: user.rpc

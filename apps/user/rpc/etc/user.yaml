@@ -22,7 +22,9 @@ Cache:
 
 Jwt:
   AccessSecret: labmem@001
-  AccessExpire: 8640000
+  AccessExpire: 900
+  RefreshSecret: labmem@refresh@1
+  RefreshExpire: 604800
 
 Telemetry:
   Name: user.rpc

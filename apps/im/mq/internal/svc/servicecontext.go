@@ -27,7 +27,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	svc := &ServiceContext{
 		Config:            c,
 		Redis:             redis.MustNewRedis(c.Redisx),
-		ChatLogModel:      model.MustChatLogModel(c.Mongo.Url, c.Mongo.Db),
+		ChatLogModel:      model.MustChatLogModel(c.Mongo.Url, c.Mongo.Db, "chatlog"),
 		ConversationModel: model.MustConversationModel(c.Mongo.Url, c.Mongo.Db),
 
 		Social: socialclient.NewSocial(zrpc.MustNewClient(c.SocialRpc)),

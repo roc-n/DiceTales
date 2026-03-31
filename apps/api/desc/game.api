@@ -1,0 +1,18 @@
+syntax = "v1"
+
+type (
+    GamePlaceholderReq {}
+    GamePlaceholderResp {
+        Msg string `json:"msg"`
+    }
+)
+
+@server (
+    prefix: /v1/game
+    group: game
+)
+service api-api {
+    @doc "Game Module Placeholder"
+    @handler gamePing
+    get /ping (GamePlaceholderReq) returns (GamePlaceholderResp)
+}

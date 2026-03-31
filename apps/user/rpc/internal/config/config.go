@@ -17,7 +17,9 @@ type Config struct {
 	Redisx redis.RedisConf
 
 	Jwt struct {
-		AccessSecret string
-		AccessExpire int64
+		AccessSecret  string
+		AccessExpire  int64
+		RefreshSecret string
+		RefreshExpire int64
 	}
 }

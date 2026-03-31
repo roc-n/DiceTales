@@ -14,17 +14,19 @@ import (
 )
 
 type (
-	FindUserReq     = user.FindUserReq
-	FindUserResp    = user.FindUserResp
-	GetUserInfoReq  = user.GetUserInfoReq
-	GetUserInfoResp = user.GetUserInfoResp
-	LoginReq        = user.LoginReq
-	LoginResp       = user.LoginResp
-	RegisterReq     = user.RegisterReq
-	RegisterResp    = user.RegisterResp
-	Request         = user.Request
-	Response        = user.Response
-	UserEntity      = user.UserEntity
+	FindUserReq      = user.FindUserReq
+	FindUserResp     = user.FindUserResp
+	GetUserInfoReq   = user.GetUserInfoReq
+	GetUserInfoResp  = user.GetUserInfoResp
+	LoginReq         = user.LoginReq
+	LoginResp        = user.LoginResp
+	RefreshTokenReq  = user.RefreshTokenReq
+	RefreshTokenResp = user.RefreshTokenResp
+	RegisterReq      = user.RegisterReq
+	RegisterResp     = user.RegisterResp
+	Request          = user.Request
+	Response         = user.Response
+	UserEntity       = user.UserEntity
 
 	User interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
@@ -32,6 +34,7 @@ type (
 		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 		GetUserInfo(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
 		FindUser(ctx context.Context, in *FindUserReq, opts ...grpc.CallOption) (*FindUserResp, error)
+		RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenResp, error)
 	}
 
 	defaultUser struct {
@@ -68,4 +71,9 @@ func (m *defaultUser) GetUserInfo(ctx context.Context, in *GetUserInfoReq, opts 
 func (m *defaultUser) FindUser(ctx context.Context, in *FindUserReq, opts ...grpc.CallOption) (*FindUserResp, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.FindUser(ctx, in, opts...)
+}
+
+func (m *defaultUser) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenResp, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.RefreshToken(ctx, in, opts...)
 }
