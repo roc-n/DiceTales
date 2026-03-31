@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package game;
+
+option go_package = "./game";
+
+// Common Models
+message Tag {
+    int64 id = 1;
+    string name = 2;
+    int32 category = 3;
+}
+
+message GameResource {
+    int64 id = 1;
+    int32 type = 2;
+    string title = 3;
+    string url = 4;
+}
+
+message GameBasic {
+    int64 id = 1;
+    string name = 2;
+    string cover_img = 3;
+    double score = 4;
+}
+
+// 2.1 GetGameDetail
+message GetGameDetailReq {
+    int64 game_id = 1;
+}
+
+message GetGameDetailResp {
+    int64 id = 1;
+    string name = 2;
+    string name_en = 3;
+    string cover_img = 4;
+    double score = 5;
+    int32 score_count = 6;
+    int32 publish_year = 7;
+    int32 min_players = 8;
+    int32 max_players = 9;
+    int32 duration_min = 10;
+    int32 duration_max = 11;
+    double complexity = 12;
+    string description = 13;
+    
+    repeated Tag tags = 14;               // 关联的标签
+    repeated GameResource resources = 15; // 关联的资源
+}
+
+// 2.2 FilterGames
+message FilterGamesReq {
+    int32 player_count = 1;      // e.g., 4
+    string duration_range = 2;   // "SHORT", "MEDIUM", "LONG"
+    string complexity_level = 3; // "LIGHT", "MEDIUM", "HEAVY"
+    repeated int64 tag_ids = 4;  // 需要满足的 Tag ID 列表
+    
+    int32 page = 5;
+    int32 size = 6;
+    string sort_by = 7;          // "score", "hot"
+}
+
+message FilterGamesResp {
+    int64 total = 1;
+    repeated int64 game_ids = 2;
+}
+
+// 2.3 SearchGames
+message SearchGamesReq {
+    string keyword = 1;
+    int32 page = 2;
+    int32 size = 3;
+}
+
+message SearchGamesResp {
+    int64 total = 1;
+    repeated GameBasic list = 2;
+}
+
+// 2.4 GetGameBasicInfo
+message GetGameBasicInfoReq {
+    repeated int64 game_ids = 1;
+}
+
+message GetGameBasicInfoResp {
+    map<int64, GameBasic> game_basics = 1;
+}
+
+// Service Endpoint
+service Game {
+    // 获取桌游详细信息
+    rpc GetGameDetail(GetGameDetailReq) returns(GetGameDetailResp);
+    // 高级组合筛选 (核心亮点)
+    rpc FilterGames(FilterGamesReq) returns(FilterGamesResp);
+    // 模糊搜索
+    rpc SearchGames(SearchGamesReq) returns(SearchGamesResp);
+    // 批量拉取桌游轻量摘要
+    rpc GetGameBasicInfo(GetGameBasicInfoReq) returns(GetGameBasicInfoResp);
+}
