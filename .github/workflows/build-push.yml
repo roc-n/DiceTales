@@ -1,0 +1,59 @@
+name: "Build and Push Docker Images"
+
+on:
+  push:
+    branches:
+      - main
+    # 如果你想打 Tag (比如 v1.0.0) 时才触发，可以打开下面的注释，并注释掉上面的 main：
+    # tags:
+    #   - 'v*'
+
+env:
+  # TODO: 请按你的实际情况修改阿里云容器镜像服务的地址和命名空间
+  REGISTRY: crpi-52ct675t9ypuyp0h.cn-hangzhou.personal.cr.aliyuncs.com
+  NAMESPACE: dicetales
+
+jobs:
+  build-and-push:
+    name: Build & Push ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # 如果某一个服务构建失败，不要立即取消其他服务的构建
+      matrix:
+        # 这里的名字对应了你 deploy/docker/Dockerfile_xxx 文件的后缀
+        # 如果还有新增服务，直接往这个数组里加即可
+        service: 
+          - social_rpc
+          - user_rpc
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 使用 Docker 官方 Action 登录阿里云镜像仓库
+      - name: Log in to Aliyun Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ALIYUN_REGISTRY_USER }}
+          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+
+      # 开启 Buildx 以获得构建缓存等高级特性
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 根据 matrix 变量并行进行各个微服务的构建和推送
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # 根据当前遍历的服务名，动态读取你的 Dockerfile
+          file: deploy/docker/Dockerfile_${{ matrix.service }}
+          push: true
+          # 自动打上 Git Commit Hash 标签以及 latest 标签
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ matrix.service }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ matrix.service }}:latest
+          # 开启 GitHub Action 专用的缓存机制，能让下次流水线镜像构建直接起飞
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
