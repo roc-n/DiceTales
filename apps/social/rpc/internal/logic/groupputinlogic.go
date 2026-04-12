@@ -90,7 +90,9 @@ func (l *GroupPutinLogic) GroupPutin(in *social.GroupPutinReq) (*social.GroupPut
 		return nil, errors.Wrapf(errorx.NewDBErr(), "find group by groud id err [%v], req [%v]", err, in.GroupId)
 	}
 	if !groupInfo.IsVerify {
-		defer l.createGroupMember(in)
+		defer func() {
+			_ = l.createGroupMember(in)
+		}()
 
 		groupReq.HandleResult = sql.NullInt64{
 			Int64: int64(PassHandlerResult),
@@ -111,7 +113,9 @@ func (l *GroupPutinLogic) GroupPutin(in *social.GroupPutinReq) (*social.GroupPut
 
 		// 邀请人是群主或管理员，直接通过
 		if GroupRoleLevel(inviteGroupMember.RoleLevel) == CreatorGroupRoleLevel || GroupRoleLevel(inviteGroupMember.RoleLevel) == ManagerGroupRoleLevel {
-			defer l.createGroupMember(in)
+			defer func() {
+				_ = l.createGroupMember(in)
+			}()
 
 			groupReq.HandleResult = sql.NullInt64{
 				Int64: int64(PassHandlerResult),

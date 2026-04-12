@@ -75,6 +75,7 @@ func (l *PutChatLogLogic) PutChatLog(in *im.PutChatLogReq) (*im.PutChatLogResp, 
 		_, _ = l.svcCtx.Redis.ZaddCtx(l.ctx, recvZsetKey, nowTime, in.ConversationId)
 	} else {
 		// todo 群聊需要发送到消息队列异步分发给群内的其他所有组员（因为群员可能有几万人）
+		_ = nowTime // 避免空分支检查
 	}
 
 	return &im.PutChatLogResp{

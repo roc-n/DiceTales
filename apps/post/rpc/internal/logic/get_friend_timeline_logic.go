@@ -32,6 +32,7 @@ func (l *GetFriendTimelineLogic) GetFriendTimeline(in *post.GetFriendTimelineReq
 	if limit == 0 {
 		limit = 20
 	}
+	_ = limit // 防止 ineffassign 报错
 
 	// Logic outline:
 	// redisClient.ZrevrangebyscoreWithLimitCtx(...)

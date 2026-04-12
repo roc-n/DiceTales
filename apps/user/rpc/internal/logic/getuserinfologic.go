@@ -39,7 +39,7 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.GetUserInfoReq) (*user.GetUserIn
 	}
 
 	var resp user.UserEntity
-	copier.Copy(&resp, userEntiy)
+	_ = copier.Copy(&resp, userEntiy)
 
 	return &user.GetUserInfoResp{
 		User: &resp,

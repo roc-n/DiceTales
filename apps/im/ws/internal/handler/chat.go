@@ -40,7 +40,7 @@ func Chat(svc *svc.ServiceContext) core.HandlerFunc {
 			Wrapper:        data.Wrapper,
 		})
 		if err != nil {
-			srv.Send(core.NewErrMessage(err), cx)
+			_ = srv.Send(core.NewErrMessage(err), cx)
 			return
 		}
 	}

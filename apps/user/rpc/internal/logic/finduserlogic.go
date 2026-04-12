@@ -51,7 +51,7 @@ func (l *FindUserLogic) FindUser(in *user.FindUserReq) (*user.FindUserResp, erro
 	}
 
 	var resp []*user.UserEntity
-	copier.Copy(&resp, &userEntitys)
+	_ = copier.Copy(&resp, &userEntitys)
 
 	return &user.FindUserResp{
 		User: resp,
