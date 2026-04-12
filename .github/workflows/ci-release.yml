@@ -3,8 +3,8 @@ name: "Build and Push Docker Images"
 on:
   push:
     branches:
-      - main
-    # 如果你想打 Tag (比如 v1.0.0) 时才触发，可以打开下面的注释，并注释掉上面的 main：
+      - master
+    # 如果你想打 Tag (比如 v1.0.0) 时才触发，可以打开下面的注释，并注释掉上面的 master：
     # tags:
     #   - 'v*'
 
@@ -14,7 +14,39 @@ env:
   NAMESPACE: dicetales
 
 jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+
+  test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Run tests with coverage
+        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
   build-and-push:
+    needs: [lint, test]
     name: Build & Push ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
