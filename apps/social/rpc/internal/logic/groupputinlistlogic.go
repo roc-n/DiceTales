@@ -33,7 +33,7 @@ func (l *GroupPutinListLogic) GroupPutinList(in *social.GroupPutinListReq) (*soc
 	}
 
 	var respList []*social.GroupRequest
-	copier.Copy(&respList, groupReqs)
+	_ = copier.Copy(&respList, groupReqs)
 
 	return &social.GroupPutinListResp{
 		List: respList,

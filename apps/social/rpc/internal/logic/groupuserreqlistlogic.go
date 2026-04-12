@@ -33,7 +33,7 @@ func (l *GroupUserReqListLogic) GroupUserReqList(in *social.GroupUserReqListReq)
 	}
 
 	var respList []*social.GroupRequest
-	copier.Copy(&respList, groupReqs)
+	_ = copier.Copy(&respList, groupReqs)
 
 	return &social.GroupUserReqListResp{
 		List: respList,

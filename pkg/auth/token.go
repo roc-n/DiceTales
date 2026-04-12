@@ -19,7 +19,7 @@ func GenerateAccessToken(secretKey string, iat, seconds int64, uid string) (stri
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat
 	claims["typ"] = "access"
-	claims[ctxdata.Identify] = uid
+	claims[string(ctxdata.Identify)] = uid
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claims
@@ -34,7 +34,7 @@ func GenerateRefreshToken(secretKey string, iat, seconds int64, uid, jti string)
 	claims["iat"] = iat
 	claims["typ"] = "refresh"
 	claims["jti"] = jti
-	claims[ctxdata.Identify] = uid
+	claims[string(ctxdata.Identify)] = uid
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claims

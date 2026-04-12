@@ -40,7 +40,7 @@ func (l *RefreshTokenLogic) RefreshToken(in *user.RefreshTokenReq) (*user.Refres
 		return nil, errors.WithStack(ErrInvalidRefreshToken)
 	}
 
-	uid, ok := claims[ctxdata.Identify].(string)
+	uid, ok := claims[string(ctxdata.Identify)].(string)
 	if !ok || uid == "" {
 		return nil, errors.WithStack(ErrInvalidRefreshToken)
 	}

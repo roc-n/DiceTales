@@ -2,7 +2,9 @@ package ctxdata
 
 import "context"
 
-const Identify string = "dicetales.uid"
+type CtxKey string
+
+const Identify CtxKey = "dicetales.uid"
 
 func GetUId(ctx context.Context) string {
 	if uid, ok := ctx.Value(Identify).(string); ok {

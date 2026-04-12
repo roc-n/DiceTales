@@ -34,7 +34,7 @@ func (l *GroupMemberLogic) GroupMember(in *social.GroupMemberReq) (*social.Group
 	}
 
 	var respList []*social.GroupMember
-	copier.Copy(&respList, &members)
+	_ = copier.Copy(&respList, &members)
 
 	return &social.GroupMemberResp{
 		List: respList,
