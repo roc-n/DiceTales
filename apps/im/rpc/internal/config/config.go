@@ -14,6 +14,6 @@ type Config struct {
 	Redis redis.RedisConf
 
 	Snowflake struct {
-		Node int64 `json:",default=1"`
+		Node int64
 	}
 }

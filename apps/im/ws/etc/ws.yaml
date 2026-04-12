@@ -15,3 +15,6 @@ MessageTransfer:
     - 124.221.43.166:9092
   
 SensitiveWordsPath: /apps/im/ws/etc/dev/sensitive_words.txt
+
+SnowFlake:
+  Node: 0
