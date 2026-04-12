@@ -51,7 +51,7 @@ func (l *GroupListLogic) GroupList(in *social.GroupListReq) (*social.GroupListRe
 
 	// 将查询到的群信息转换为RPC响应对象
 	var respList []*social.Group
-	copier.Copy(&respList, &groups)
+	_ = copier.Copy(&respList, &groups)
 
 	return &social.GroupListResp{
 		List: respList,

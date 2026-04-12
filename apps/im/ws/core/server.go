@@ -10,9 +10,7 @@ import (
 
 	"sync"
 
-	"dicetales.com/pkg/constants"
 	"github.com/gorilla/websocket"
-	"github.com/zeromicro/go-zero/core/limit"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/threading"
 )
@@ -310,18 +308,4 @@ func (s *Server) handlerWrite(c *Connx) {
 			}
 		}
 	}
-}
-
-// 获取用户消息限流器
-func (s *Server) getLimiter(uid string) *limit.TokenLimiter {
-	if uid == constants.SYSTEM_ROOT_UID {
-		// 系统用户不做限流
-		return nil
-	}
-	limiter, ok := s.limiter.Load(uid)
-	if !ok {
-		limiter = limit.NewTokenLimiter(5, 20, nil, "")
-		s.limiter.Store(uid, limiter)
-	}
-	return limiter.(*limit.TokenLimiter)
 }

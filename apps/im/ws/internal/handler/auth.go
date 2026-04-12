@@ -51,7 +51,7 @@ func (j *JwtAuth) Auth(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	// 注意这里不要用自定义类型
-	*r = *r.WithContext(context.WithValue(r.Context(), ctxdata.Identify, claims[ctxdata.Identify]))
+	*r = *r.WithContext(context.WithValue(r.Context(), ctxdata.Identify, claims[string(ctxdata.Identify)]))
 
 	return true
 }

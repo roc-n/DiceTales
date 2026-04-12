@@ -10,15 +10,15 @@ func Push(svc *svc.ServiceContext) core.HandlerFunc {
 	return func(srv *core.Server, conn *core.Connx, msg *core.Message) {
 		var data core.ChatMessage
 		if err := mapstructure.Decode(msg.Data, &data); err != nil {
-			srv.Send(core.NewErrMessage(err), conn)
+			_ = srv.Send(core.NewErrMessage(err), conn)
 			return
 		}
 
 		switch data.ChatType {
 		case core.SingleChatType:
-			single(srv, &data, data.RecvId)
+			_ = single(srv, &data, data.RecvId)
 		case core.GroupChatType:
-			group(srv, &data)
+			_ = group(srv, &data)
 		}
 	}
 }
@@ -46,7 +46,7 @@ func group(srv *core.Server, data *core.ChatMessage) error {
 	for _, id := range data.RecvIds {
 		func(id string) {
 			srv.Schedule(func() {
-				single(srv, data, id)
+				_ = single(srv, data, id)
 			})
 		}(id)
 	}

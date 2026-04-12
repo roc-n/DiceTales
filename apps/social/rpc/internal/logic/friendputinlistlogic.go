@@ -38,8 +38,8 @@ func (l *FriendPutInListLogic) FriendPutInList(in *social.FriendPutInListReq) (*
 
 	var reqList []*social.FriendRequest
 	var recvList []*social.FriendRequest
-	copier.Copy(&reqList, friendReqsOut)
-	copier.Copy(&recvList, friendReqsIn)
+	_ = copier.Copy(&reqList, friendReqsOut)
+	_ = copier.Copy(&recvList, friendReqsIn)
 
 	return &social.FriendPutInListResp{
 		ReqList:  reqList,

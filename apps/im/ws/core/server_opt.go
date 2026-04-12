@@ -31,8 +31,7 @@ type serverOption struct {
 	patten string
 
 	// 消息ACK相关
-	ack        AckType
-	ackTimeout time.Duration
+	ack AckType
 	// 最长连接空闲时间，超过这个时间没有任何消息（任意消息，包括心跳包），则关闭连接
 	maxConnectionIdle time.Duration
 	// 心跳检测策略

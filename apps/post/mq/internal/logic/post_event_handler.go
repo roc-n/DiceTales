@@ -29,7 +29,7 @@ func (h *PostEventHandler) Consume(ctx context.Context, key, val string) error {
 	}
 
 	eventType, flag := event["type"].(string)
-	if flag == false {
+	if !flag {
 		return nil
 	}
 
