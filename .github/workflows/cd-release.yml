@@ -1,0 +1,65 @@
+name: "CD: Deploy to Server"
+
+on:
+  # 方式 1: 手动触发发布 (支持回滚和指定版本)
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境 (如 test, prod)'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - prod
+      image_tag:
+        description: '部署的镜像标签 (如 latest, v1.0.0, 或具体的 Git Hash)'
+        required: true
+        default: 'latest'
+
+  # 方式 2: 监听 CI 成功后自动发布 (如果想全自动化，可以打开这里)
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    types: [completed]
+    branches: [master]
+
+env:
+  REGISTRY: crpi-52ct675t9ypuyp0h.cn-hangzhou.personal.cr.aliyuncs.com
+  NAMESPACE: dicetales
+
+jobs:
+  deploy-to-server:
+    # 确保守护：如果是被挂钩的 CI 唤醒的，只有 CI 成功才继续布署
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    name: Deploy to ${{ inputs.environment || 'test' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          # 将我们在 trigger 阶段接收到的变量传给服务器执行：
+          envs: IMAGE_TAG,DOCKER_REGISTRY
+          script: |
+            export IMAGE_TAG="${{ inputs.image_tag || 'latest' }}"
+            export DOCKER_REGISTRY="${{ env.REGISTRY }}"
+            echo "Deploying image tag: $IMAGE_TAG to environment..."
+            
+            # 1. 登录阿里云镜像仓库
+            docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} $DOCKER_REGISTRY
+            
+            # 2. 进入部署目录
+            cd /opt/dicetales || exit 1
+            
+            # [TODO: 在服务器的 docker-compose.yml 里，你需要将镜像的 TAG 设置为引用环境变量，比如 dictales/user_rpc:${IMAGE_TAG:-latest}]
+            export IMAGE_TAG=$IMAGE_TAG
+            
+            # 3. 拉取指定镜像并重启
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+            
+            # 4. 清理僵尸镜像
+            docker image prune -a -f
