@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # 编译参数
-ARG SERVER_NAME=user
+ARG SERVER_NAME=social
 ARG SERVER_TYPE=rpc
 
 # 在容器内进行静态编译
