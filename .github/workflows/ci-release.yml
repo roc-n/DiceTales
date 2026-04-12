@@ -80,7 +80,7 @@ jobs:
         with:
           context: .
           # 根据当前遍历的服务名，动态读取你的 Dockerfile
-          file: deploy/docker/Dockerfile_${{ matrix.service }}
+          file: deploy/docker/ci/Dockerfile_${{ matrix.service }}
           push: true
           # 自动打上 Git Commit Hash 标签以及 latest 标签
           tags: |
