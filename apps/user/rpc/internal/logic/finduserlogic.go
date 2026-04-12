@@ -34,8 +34,8 @@ func (l *FindUserLogic) FindUser(in *user.FindUserReq) (*user.FindUserResp, erro
 	)
 
 	switch {
-	case in.Id != "":
-		userEntity, err = l.svcCtx.UserModel.FindById(l.ctx, in.Id)
+	case in.Account != "":
+		userEntity, err = l.svcCtx.UserModel.FindOneByAccount(l.ctx, in.Account)
 	case in.Phone != "":
 		userEntity, err = l.svcCtx.UserModel.FindByPhone(l.ctx, in.Phone)
 	case in.Name != "":

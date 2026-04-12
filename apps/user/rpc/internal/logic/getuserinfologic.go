@@ -30,7 +30,7 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserInfoLogic) GetUserInfo(in *user.GetUserInfoReq) (*user.GetUserInfoResp, error) {
 
-	userEntiy, err := l.svcCtx.UserModel.FindOne(l.ctx, in.Id)
+	userEntiy, err := l.svcCtx.UserModel.FindOneByAccount(l.ctx, in.Account)
 	if err != nil {
 		if err == model.ErrNotFound {
 			return nil, ErrUserNotFound

@@ -35,12 +35,12 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 
 	// 根据id验证用户存在
-	userInfo, err := l.svcCtx.UserModel.FindById(l.ctx, in.Id)
+	userInfo, err := l.svcCtx.UserModel.FindById(l.ctx, in.Account)
 	if err != nil {
 		if err == model.ErrNotFound {
 			return nil, errors.WithStack(ErrIdNotRegister)
 		}
-		return nil, errors.Wrapf(errorx.NewDBErr(), "find user by id err: [%v], req: [%v]", err, in.Id)
+		return nil, errors.Wrapf(errorx.NewDBErr(), "find user by account err: [%v], req: [%v]", err, in.Account)
 	}
 
 	// 密码验证
@@ -48,7 +48,7 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 		return nil, errors.WithStack(ErrUserPwdError)
 	}
 
-	pack, err := issueDualTokens(l.ctx, l.svcCtx, userInfo.Id, l.Logger)
+	pack, err := issueDualTokens(l.ctx, l.svcCtx, userInfo.Account, l.Logger)
 	if err != nil {
 		return nil, err
 	}

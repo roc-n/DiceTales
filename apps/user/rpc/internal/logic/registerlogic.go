@@ -48,13 +48,13 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 		return nil, errors.WithStack(ErrPasswordEmpty)
 	}
 
-	id, err := l.svcCtx.IDGen.Get(l.ctx)
+	account, err := l.svcCtx.IDGen.Get(l.ctx)
 	if err != nil {
 		return nil, errors.Wrapf(errorx.NewInternalErr(), "generate user id err: [%v]", err)
 	}
 
 	userEntity = &model.User{
-		Id:       id,
+		Account:       account,
 		Avatar:   in.Avatar,
 		Nickname: in.Nickname,
 		Phone:    in.Phone,
@@ -74,12 +74,12 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 		return nil, errors.Wrapf(errorx.NewDBErr(), "insert user err [%v], req: [%v]", err, in)
 	}
 
-	// 确认ID已使用 (修改 id_pool 状态)
-	if err := l.svcCtx.IDGen.Confirm(context.Background(), id); err != nil {
-		l.Logger.Errorf("confirm user id failed, id: %s, err: [%v]", id, err)
+	// 确认account已使用 (修改 id_pool 状态)
+	if err := l.svcCtx.IDGen.Confirm(context.Background(), account); err != nil {
+		l.Logger.Errorf("confirm user account failed, account: %s, err: [%v]", account, err)
 	}
 
-	pack, err := issueDualTokens(l.ctx, l.svcCtx, id, l.Logger)
+	pack, err := issueDualTokens(l.ctx, l.svcCtx, account, l.Logger)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 	return &user.RegisterResp{
 		Token:         pack.AccessToken,
 		Expire:        pack.AccessExpire,
-		Id:            id,
+		Account:            account,
 		AccessToken:   pack.AccessToken,
 		AccessExpire:  pack.AccessExpire,
 		RefreshToken:  pack.RefreshToken,

@@ -5,7 +5,7 @@ option go_package = "./user";
 
 // model
 message UserEntity {
-  string  id = 1;                // 用户id
+  int64   id = 1;                // 用户自增id
   string  avatar = 2;            // 用户头像
   string  nickname = 3;          // 昵称
   string  bio = 4;               // 个性签名
@@ -13,6 +13,7 @@ message UserEntity {
   string  city = 6;              // 所在地
   int32   status  = 7;           // 锁定状态
   int32   sex = 8;               // 性别
+  string  account = 9;           // 用户账号
 }
 
 // req 与 resp
@@ -25,7 +26,7 @@ message Response {
 }
 
 message LoginReq {
-  string  id = 1;
+  string  account = 1;
   string  password = 2;
 }
 
@@ -51,15 +52,16 @@ message RegisterReq{
 message RegisterResp {
   string Token = 1; // deprecated
   int64 expire = 2; // deprecated
-  string Id = 3;
+  string account = 3;
   string accessToken = 4;
   int64 accessExpire = 5;
   string refreshToken = 6;
   int64 refreshExpire = 7;
+  int64 id = 8;
 }
 
 message GetUserInfoReq {
-  string id = 1;
+  string account = 1;
 }
 
 message GetUserInfoResp {
@@ -67,7 +69,7 @@ message GetUserInfoResp {
 }
 
 message FindUserReq {
-  string id = 1;
+  string account = 1;
   string phone = 2;
   string name = 3;
 }
