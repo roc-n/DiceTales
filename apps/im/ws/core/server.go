@@ -115,7 +115,7 @@ func (s *Server) ServeWs(w http.ResponseWriter, r *http.Request) {
 
 	// 根据连接对象获取请求
 	if !s.authentication.Auth(w, r) {
-		s.Send(&Message{FrameType: FrameData, Data: "不具备访问权限"}, cx)
+		_ = s.Send(&Message{FrameType: FrameData, Data: "不具备访问权限"}, cx)
 		cx.Close()
 		return
 	}
@@ -299,13 +299,13 @@ func (s *Server) handlerWrite(c *Connx) {
 		case message := <-c.msgChan:
 			switch message.FrameType {
 			case FramePing:
-				s.Send(&Message{FrameType: FramePing}, c)
+				_ = s.Send(&Message{FrameType: FramePing}, c)
 			case FrameData:
 				// 根据请求的method路由到具体的handler
 				if handler, ok := s.routes[message.Method]; ok {
 					handler(s, c, message)
 				} else {
-					s.Send(&Message{FrameType: FrameData, Data: fmt.Sprintf("不存在执行的方法 %v 请检查", message.Method)}, c)
+					_ = s.Send(&Message{FrameType: FrameData, Data: fmt.Sprintf("不存在执行的方法 %v 请检查", message.Method)}, c)
 				}
 			}
 		}

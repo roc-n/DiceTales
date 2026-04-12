@@ -38,7 +38,7 @@ func (m *AckManager) Process(conn *Connx) {
 
 		switch conn.s.opt.ack {
 		case OnceAck:
-			conn.s.Send(&Message{
+			_ = conn.s.Send(&Message{
 				FrameType: FrameAck,
 				Id:        message.Id,
 			}, conn)

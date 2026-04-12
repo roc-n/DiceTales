@@ -20,11 +20,14 @@ jobs:
     name: Lint Code
     runs-on: ubuntu-latest
     steps:
+
+      # checkout@v4 是 GitHub 官方提供的 action，用于检出代码到 runner 环境中
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # 获取完整历史以支持某些 lint 规则（如果需要）
 
+      # 为CI环境配置Go环境，确保 lint 在 CI 环境下正确运行
       - name: Set up Go
         uses: actions/setup-go@v5
         with:

@@ -29,11 +29,11 @@ type SensitiveFilter struct {
 
 func NewSensitiveFilter(words []string) *SensitiveFilter {
 	var seg gse.Segmenter
-	seg.LoadDict()
+	_ = seg.LoadDict()
 
 	// 将敏感词加入分词词典，提升分词准确率
 	for _, w := range words {
-		seg.AddToken(w, 1000, "sensitive")
+		_ = seg.AddToken(w, 1000, "sensitive")
 	}
 	wordMap := make(map[string]struct{}, len(words))
 	for _, w := range words {

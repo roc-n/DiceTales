@@ -15,7 +15,7 @@ func Chat(svc *svc.ServiceContext) core.HandlerFunc {
 	return func(srv *core.Server, cx *core.Connx, msg *core.Message) {
 		var data core.ChatMessage
 		if err := mapstructure.Decode(msg.Data, &data); err != nil {
-			srv.Send(core.NewErrMessage(err), cx)
+			_ = srv.Send(core.NewErrMessage(err), cx)
 			return
 		}
 
