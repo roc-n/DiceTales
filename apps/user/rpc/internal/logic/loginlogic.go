@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	ErrIdNotRegister = errorx.New(errorx.SERVER_COMMON_ERROR, "手机号未注册")
+	ErrIdNotRegister = errorx.New(errorx.SERVER_COMMON_ERROR, "帐号未注册")
 	ErrUserPwdError  = errorx.New(errorx.SERVER_COMMON_ERROR, "密码错误")
 )
 
@@ -34,8 +34,8 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 
-	// 根据id验证用户存在
-	userInfo, err := l.svcCtx.UserModel.FindById(l.ctx, in.Account)
+	// 根据account验证用户存在
+	userInfo, err := l.svcCtx.UserModel.FindOneByAccount(l.ctx, in.Account)
 	if err != nil {
 		if err == model.ErrNotFound {
 			return nil, errors.WithStack(ErrIdNotRegister)

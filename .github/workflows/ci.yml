@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+# 并发控制：如果同一个 PR 有新的提交，自动取消旧的正在运行的 workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史以支持某些 lint 规则（如果需要）
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod' # 自动读取根目录 go.mod 中的 Go 版本
+          cache: true               # 自动缓存 Go Modules 和 Build 缓存，加速后续构建
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          # 针对单体仓库，在根目录执行 lint
+          args: --timeout=5m
+          # 如果只想在 PR 中检查新增代码，可以打开下面这个注释：
+          # args: --new-from-rev=HEAD~1
+
+  test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Run tests with coverage
+        # ./... 表示测试根目录下所有子目录的 go package
+        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov (Optional)
+        # 这是一个非常流行的测试覆盖率可视化工具，可以将 coverage.txt 上传展示
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.txt
+          fail_ci_if_error: false # 如果上传失败不影响整个 CI 的成功
+
+  build-verify:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    # 可以设置为在 lint 和 test 成功后才执行（也可以并行执行以节省总时间，这里演示并行）
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Verify all packages build smoothly
+        # -v 打印编译的包，确保包括类似 apps/api，apps/user 都能正常通过编译，但不生成二进制文件
+        run: go build -v ./...
