@@ -18,10 +18,10 @@ on:
         default: 'latest'
 
   # 方式 2: 监听 CI 成功后自动发布 (如果想全自动化，可以打开这里)
-  workflow_run:
-    workflows: ["Build and Push Docker Images"]
-    types: [completed]
-    branches: [master]
+  # workflow_run:
+  #   workflows: ["Build and Push Docker Images"]
+  #   types: [completed]
+  #   branches: [master]
 
 env:
   REGISTRY: crpi-52ct675t9ypuyp0h.cn-hangzhou.personal.cr.aliyuncs.com
@@ -30,7 +30,8 @@ env:
 jobs:
   deploy-to-server:
     # 确保守护：如果是被挂钩的 CI 唤醒的，只有 CI 成功才继续布署
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Deploy to ${{ inputs.environment || 'test' }}
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +53,7 @@ jobs:
             docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} $DOCKER_REGISTRY
             
             # 2. 进入部署目录
-            cd /opt/dicetales || exit 1
+            cd /home/labmem/code/Go/DiceTale-Server || exit 1
             
             # [TODO: 在服务器的 docker-compose.yml 里，你需要将镜像的 TAG 设置为引用环境变量，比如 dictales/user_rpc:${IMAGE_TAG:-latest}]
             export IMAGE_TAG=$IMAGE_TAG
