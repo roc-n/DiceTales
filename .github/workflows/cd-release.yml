@@ -59,8 +59,8 @@ jobs:
             export IMAGE_TAG=$IMAGE_TAG
             
             # 3. 拉取指定镜像并重启
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+            docker compose pull
+            docker compose up -d --remove-orphans
             
             # 4. 清理僵尸镜像
             docker image prune -a -f
